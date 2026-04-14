@@ -82,9 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     wrongResults.forEach(r => {
       const myAns      = r.choices[r.userAnswer];
-      const correctAns = r.choices[r.answer];
-      const altAns     = r.answer_alt !== undefined ? r.choices[r.answer_alt] : null;
-      const correctNote = altAns ? `${correctAns} または ${altAns}` : correctAns;
+      // answer_alt は数値・配列どちらでも対応
+      const altIdxList = r.answer_alt !== undefined
+        ? (Array.isArray(r.answer_alt) ? r.answer_alt : [r.answer_alt])
+        : [];
+      const allCorrectIdx = [r.answer, ...altIdxList];
+      const correctNote = allCorrectIdx.map(i => r.choices[i]).join(' または ');
 
       const item = document.createElement('div');
       item.className = 'wrong-item';

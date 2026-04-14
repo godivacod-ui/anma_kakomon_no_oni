@@ -86,17 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
     answered = true;
 
     const q = state.questions[state.currentIndex];
-    const correctIdx     = q.answer;
-    const correctAltIdx  = q.answer_alt !== undefined ? q.answer_alt : null;
+    const correctIdx  = q.answer;
+    // answer_alt は数値・配列どちらでも配列に正規化
+    const altIdxList  = q.answer_alt !== undefined
+      ? (Array.isArray(q.answer_alt) ? q.answer_alt : [q.answer_alt])
+      : [];
+    const allCorrectIdx = [correctIdx, ...altIdxList];
 
-    const isCorrect = selectedIdx === correctIdx ||
-                      (correctAltIdx !== null && selectedIdx === correctAltIdx);
+    const isCorrect = allCorrectIdx.includes(selectedIdx);
 
     // ボタンに正解/不正解スタイルを適用
     const btns = choicesListEl.querySelectorAll('.choice-btn');
     btns.forEach((btn, idx) => {
       btn.disabled = true;
-      if (idx === correctIdx || idx === correctAltIdx) {
+      if (allCorrectIdx.includes(idx)) {
         btn.classList.add(idx === selectedIdx ? 'correct' : 'highlight-correct');
       } else if (idx === selectedIdx && !isCorrect) {
         btn.classList.add('wrong');
@@ -130,18 +133,18 @@ document.addEventListener('DOMContentLoaded', () => {
     saveQuizState(state);
 
     // フィードバック表示
-    const correctLabel = q.choices[correctIdx];
+    const correctLabels = allCorrectIdx.map(i => q.choices[i]);
     if (isCorrect) {
       feedbackEl.className = 'feedback correct-feedback show';
-      feedbackTitle.textContent = '正解！';
+      feedbackTitle.textContent = altIdxList.length > 0
+        ? `正解！（正解は${correctLabels.length}つあります）`
+        : '正解！';
       feedbackExpl.textContent = q.explanation || '';
       feedbackExpl.style.display = q.explanation ? 'block' : 'none';
     } else {
       feedbackEl.className = 'feedback wrong-feedback show';
-      const altNote = correctAltIdx !== null
-        ? `または「${q.choices[correctAltIdx]}」`
-        : '';
-      feedbackTitle.textContent = `不正解　正解：${correctLabel}${altNote}`;
+      const correctNote = correctLabels.join('・');
+      feedbackTitle.textContent = `不正解　正解：${correctNote}`;
       feedbackExpl.textContent = q.explanation || '';
       feedbackExpl.style.display = q.explanation ? 'block' : 'none';
     }
