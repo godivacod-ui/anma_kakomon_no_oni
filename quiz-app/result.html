@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>結果 - あん摩マッサージ指圧師 過去問</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page">
+
+    <header class="app-header">
+      <div class="app-title">結果</div>
+    </header>
+
+    <!-- スコアカード -->
+    <div class="card mt-16">
+      <div class="result-header">
+        <div class="result-score-circle" id="scoreCircle">
+          <div class="score-inner">
+            <div class="score-pct" id="scorePct">0%</div>
+            <div class="score-label">正解率</div>
+          </div>
+        </div>
+        <div class="score-detail" id="scoreDetail"></div>
+        <div class="result-grade" id="resultGrade"></div>
+      </div>
+
+      <!-- ジャンル別成績 -->
+      <div class="section-title">ジャンル別成績</div>
+      <div id="genreResults" class="genre-results"></div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="card mt-16">
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="retryBtn">
+          もう一度同じ問題に挑戦
+        </button>
+        <button class="btn btn-outline" id="reviewBtn">
+          ⚡ 間違えた問題を復習する（<span id="wrongCount">0</span>問）
+        </button>
+        <button class="btn btn-secondary" id="topBtn">
+          ジャンル選択に戻る
+        </button>
+      </div>
+    </div>
+
+    <!-- 間違えた問題一覧 -->
+    <div id="wrongSection" class="card mt-16">
+      <div class="section-title">間違えた問題</div>
+      <div id="wrongList" class="wrong-list"></div>
+    </div>
+
+  </div>
+
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/result.js"></script>
+</body>
+</html>
