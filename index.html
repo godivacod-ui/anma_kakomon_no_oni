@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あん摩マッサージ指圧師 過去問</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page">
+
+    <header class="app-header">
+      <div class="app-title">あん摩マッサージ指圧師</div>
+      <div class="app-subtitle">国家試験 過去問アプリ</div>
+    </header>
+
+    <!-- 苦手問題モードボタン（苦手問題がある時だけ表示） -->
+    <div id="weakModeBtn" class="hidden mt-16">
+      <button class="btn btn-outline" onclick="this.dispatchEvent(new Event('click',{bubbles:true}))">
+        ⚡ 苦手問題を復習する
+        （<span id="weakCount">0</span>問）
+      </button>
+    </div>
+
+    <div class="card mt-20">
+      <div class="section-label">ジャンル選択</div>
+
+      <div class="genre-controls">
+        <button class="btn-text" id="selectAll">すべて選択</button>
+        <button class="btn-text" id="clearAll">すべて解除</button>
+      </div>
+
+      <div id="genreList" class="genre-list"></div>
+
+      <div class="count-setting mt-20">
+        <div class="section-label">出題数</div>
+        <div class="count-row">
+          <span class="count-label">問題数を選ぶ</span>
+          <div class="count-input-wrap">
+            <button class="count-btn" id="countMinus">−</button>
+            <input type="number" id="questionCount" value="10" min="1">
+            <button class="count-btn" id="countPlus">＋</button>
+          </div>
+        </div>
+        <div class="count-max" id="countMax">最大 0 問</div>
+      </div>
+    </div>
+
+    <div class="start-section">
+      <button class="btn btn-primary" id="startBtn" disabled>
+        出題開始
+      </button>
+    </div>
+
+  </div>
+
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/genre.js"></script>
+</body>
+</html>
