@@ -2,6 +2,18 @@
 // クイズ画面ロジック
 // ===========================
 
+// 解説表示のON/OFF（解説データが整備されたらtrueに変更）
+const SHOW_EXPLANATIONS = false;
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const state = loadQuizState();
   if (!state || state.questions.length === 0) {
@@ -48,13 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 問題文（症例文「〜」を別スタイルで表示）
     questionTextEl.innerHTML = formatQuestionText(q.question);
 
-    // 選択肢
+    // 選択肢（ランダム順で表示）
+    const shuffledOrder = shuffleArray([0, 1, 2, 3]);
+    state.shuffledOrder = shuffledOrder;
     choicesListEl.innerHTML = '';
-    q.choices.forEach((choice, idx) => {
+    shuffledOrder.forEach((origIdx, displayPos) => {
       const btn = document.createElement('button');
       btn.className = 'choice-btn';
-      btn.innerHTML = `<span class="choice-num">${idx + 1}</span><span>${choice}</span>`;
-      btn.addEventListener('click', () => handleAnswer(idx));
+      btn.innerHTML = `<span class="choice-num">${displayPos + 1}</span><span>${q.choices[origIdx]}</span>`;
+      btn.addEventListener('click', () => handleAnswer(origIdx));
       choicesListEl.appendChild(btn);
     });
 
@@ -99,11 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ボタンに正解/不正解スタイルを適用
     const btns = choicesListEl.querySelectorAll('.choice-btn');
-    btns.forEach((btn, idx) => {
+    btns.forEach((btn, displayPos) => {
+      const origIdx = (state.shuffledOrder || [0, 1, 2, 3])[displayPos];
       btn.disabled = true;
-      if (allCorrectIdx.includes(idx)) {
-        btn.classList.add(idx === selectedIdx ? 'correct' : 'highlight-correct');
-      } else if (idx === selectedIdx && !isCorrect) {
+      if (allCorrectIdx.includes(origIdx)) {
+        btn.classList.add(origIdx === selectedIdx ? 'correct' : 'highlight-correct');
+      } else if (origIdx === selectedIdx && !isCorrect) {
         btn.classList.add('wrong');
       }
     });
@@ -147,15 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
       feedbackTitle.textContent = `不正解　正解：${correctNote}`;
     }
 
-    // 選択肢ごとの解説（新フォーマット）
-    if (q.choice_explanations && q.choice_explanations.length > 0) {
+    // 選択肢ごとの解説（選択肢と同じ表示順で）
+    if (SHOW_EXPLANATIONS && q.choice_explanations && q.choice_explanations.length > 0) {
       choiceExpls.innerHTML = '';
-      q.choice_explanations.forEach((text, idx) => {
+      (state.shuffledOrder || [0, 1, 2, 3]).forEach((origIdx) => {
         const item = document.createElement('div');
-        item.className = allCorrectIdx.includes(idx)
+        item.className = allCorrectIdx.includes(origIdx)
           ? 'choice-explanation-item correct'
           : 'choice-explanation-item wrong';
-        item.textContent = text;
+        item.textContent = q.choice_explanations[origIdx];
         choiceExpls.appendChild(item);
       });
       choiceExpls.style.display = 'block';
@@ -167,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ポイント
-    if (q.point) {
+    if (SHOW_EXPLANATIONS && q.point) {
       pointBox.innerHTML = '<span class="point-label">ポイント</span>' + q.point;
       pointBox.style.display = 'block';
     } else {
